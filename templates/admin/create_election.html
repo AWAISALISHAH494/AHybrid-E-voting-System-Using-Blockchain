@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Create Election{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    {% include 'admin/sidebar.html' %}
+    <main class="admin-content">
+        <div class="page-header">
+            <div><h1>Create New Election</h1><p>Set up a new election with details</p></div>
+            <a href="{{ url_for('admin.elections') }}" class="btn btn-secondary">{{ icons.icon_arrow_left() }} Back</a>
+        </div>
+        <div class="glass-card" style="max-width: 600px;">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="title">Election Title</label>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Student Council Election 2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" placeholder="Brief description of the election"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="start_date">Start Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="end_date">End Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="status">Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="pending">Pending</option>
+                            <option value="active">Active</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">Create Election {{ icons.icon_arrow_right() }}</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

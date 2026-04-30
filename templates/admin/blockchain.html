@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Blockchain Verification{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    {% include 'admin/sidebar.html' %}
+    <main class="admin-content">
+        <div class="page-header">
+            <div><h1>{{ election.title }} — Blockchain Verification</h1><p>Verify election integrity on the blockchain</p></div>
+            <a href="{{ url_for('admin.election_results', election_id=election.id) }}" class="btn btn-secondary">{{ icons.icon_arrow_left() }} Back to Results</a>
+        </div>
+
+        {% if verification.success %}
+        <div class="blockchain-card">
+            <div class="blockchain-status">
+                <div class="status-dot {% if verification.is_verified and not verification.is_tampered %}verified{% else %}unverified{% endif %}"></div>
+                <div>
+                    {% if verification.is_verified and not verification.is_tampered %}
+                    <h3 style="color: var(--success);">Results Verified — Tamper-Free</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">The election results match the blockchain record. No tampering detected.</p>
+                    {% else %}
+                    <h3 style="color: var(--error);">Verification Failed — Possible Tampering</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">The current results do not match the blockchain record. Data may have been altered.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card mb-4">
+            <div class="card-header">{{ icons.icon_search() }} Hash Comparison</div>
+            <div class="card-body">
+                <div class="hash-label">Stored Hash (at finalization)</div>
+                <div class="hash-display">{{ verification.stored_hash }}</div>
+                <div class="hash-label mt-3">Current Hash (recalculated now)</div>
+                <div class="hash-display">{{ verification.current_hash }}</div>
+                <div class="hash-label mt-3">Blockchain Hash (on-chain)</div>
+                <div class="hash-display">{{ verification.blockchain_hash or 'Unable to retrieve' }}</div>
+                {% if verification.transaction_hash %}
+                <div class="hash-label mt-3">Transaction Hash</div>
+                <div class="hash-display">{{ verification.transaction_hash }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-body">
+                <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">{{ icons.icon_info() }} How Verification Works</h4>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.9;">
+                    <p><strong>1.</strong> When an election is finalized, all votes are counted and the results are hashed using SHA-256.</p>
+                    <p><strong>2.</strong> This hash is stored permanently on the Ethereum blockchain via a smart contract.</p>
+                    <p><strong>3.</strong> To verify, we recalculate the hash from current database results and compare it with the blockchain record.</p>
+                    <p><strong>4.</strong> If the hashes match, the results are proven to be <span style="color: var(--success);">tamper-free</span>. If they don't match, data may have been <span style="color: var(--error);">altered</span> after finalization.</p>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="glass-card">
+            <div class="empty-state">
+                <div class="empty-icon">{{ icons.icon_alert() }}</div>
+                <h3>{{ verification.message }}</h3>
+                <p class="mt-2">Ensure the blockchain service (Node.js) and Ganache are running.</p>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

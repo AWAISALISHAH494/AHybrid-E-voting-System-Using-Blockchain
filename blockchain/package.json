@@ -1,0 +1,17 @@
+
+{
+  "name": "evoting-blockchain-service",
+  "version": "1.0.0",
+  "description": "Blockchain verification service for Hybrid E-Voting System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "deploy": "node scripts/deploy.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "web3": "^1.10.4",
+    "solc": "^0.8.24",
+    "cors": "^2.8.5"
+  }
+}

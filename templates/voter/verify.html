@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Verify Your Vote{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 650px;">
+    <div class="page-header" style="justify-content: center; text-align: center;">
+        <div>
+            <h1>Verify Your Vote</h1>
+            <p>Enter your receipt code to check that your vote was recorded correctly</p>
+        </div>
+    </div>
+
+    <!-- Verification Form -->
+    <div class="glass-card mb-4">
+        <div class="card-header">{{ icons.icon_search() }} Enter Receipt Code</div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="receipt_code">Receipt Code</label>
+                    <input type="text" class="form-control" id="receipt_code" name="receipt_code"
+                           placeholder="e.g., A3B5C7D9E1F20A4B"
+                           style="font-family: var(--font-mono); font-size: 1.1rem; text-align: center; letter-spacing: 0.1em; text-transform: uppercase;"
+                           value="{{ request.form.get('receipt_code', '') }}" required autofocus>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem; text-align: center;">
+                        You received this code after casting your vote
+                    </p>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    {{ icons.icon_shield() }} Verify Vote
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if verification %}
+        {% if verification.success and verification.is_intact %}
+        <!-- Verified Successfully -->
+        <div class="blockchain-card" style="border-color: rgba(0, 212, 170, 0.25);">
+            <div class="blockchain-status">
+                <div class="status-dot verified"></div>
+                <div>
+                    <h3 style="color: var(--success);">Vote Verified — Intact</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Your vote was recorded correctly and has not been tampered with.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card mb-4">
+            <div class="card-header">{{ icons.icon_vote() }} Vote Details</div>
+            <div class="card-body">
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr>
+                            <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; width: 40%;">Election</td>
+                            <td style="padding: 0.75rem 1rem;"><strong>{{ verification.election_title }}</strong></td>
+                        </tr>
+                        <tr style="border-top: 1px solid var(--border);">
+                            <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Your Vote</td>
+                            <td style="padding: 0.75rem 1rem;">
+                                <strong style="color: var(--accent-2);">{{ verification.candidate_name }}</strong>
+                                {% if verification.candidate_party %}
+                                <span style="color: var(--text-muted);"> — {{ verification.candidate_party }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr style="border-top: 1px solid var(--border);">
+                            <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Vote Type</td>
+                            <td style="padding: 0.75rem 1rem;"><span class="badge badge-electronic">{{ verification.vote_type|title }}</span></td>
+                        </tr>
+                        <tr style="border-top: 1px solid var(--border);">
+                            <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Timestamp</td>
+                            <td style="padding: 0.75rem 1rem;">{{ verification.timestamp }}</td>
+                        </tr>
+                        <tr style="border-top: 1px solid var(--border);">
+                            <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Receipt Code</td>
+                            <td style="padding: 0.75rem 1rem; font-family: var(--font-mono); letter-spacing: 0.05em;">{{ verification.receipt }}</td>
+                        </tr>
+                        <tr style="border-top: 1px solid var(--border);">
+                            <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Blockchain</td>
+                            <td style="padding: 0.75rem 1rem;">
+                                {% if verification.blockchain_verified %}
+                                <span class="badge badge-finalized">{{ icons.icon_chain() }} Sealed on Blockchain</span>
+                                {% else %}
+                                <span class="badge badge-pending">Pending Finalization</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="info-box">
+            {{ icons.icon_info() }}
+            <div>
+                <strong>What This Means</strong>
+                <p>Your encrypted vote was successfully decrypted and matches candidate <strong>{{ verification.candidate_name }}</strong>. The AES-256 decryption was successful, confirming the data has not been altered since you cast your vote.</p>
+            </div>
+        </div>
+
+        {% elif verification.success and not verification.is_intact %}
+        <!-- Tampered -->
+        <div class="blockchain-card" style="border-color: rgba(255, 71, 87, 0.25);">
+            <div class="blockchain-status">
+                <div class="status-dot unverified"></div>
+                <div>
+                    <h3 style="color: var(--error);">Warning — Possible Tampering Detected</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">
+                        {{ verification.message or 'The vote data could not be verified. It may have been corrupted or tampered with.' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Not Found -->
+        <div class="glass-card">
+            <div class="empty-state" style="padding: 2.5rem;">
+                <div class="empty-icon">{{ icons.icon_alert() }}</div>
+                <h3>{{ verification.message }}</h3>
+                <p class="mt-1">Double-check your receipt code and try again.</p>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- How it works -->
+    <div class="glass-card mt-4">
+        <div class="card-body">
+            <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">{{ icons.icon_info() }} How Vote Verification Works</h4>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.9;">
+                <p><strong>1.</strong> When you cast your vote, it is encrypted with AES-256-CBC and a unique receipt code is generated.</p>
+                <p><strong>2.</strong> The receipt code is linked to your encrypted vote but does not reveal your identity.</p>
+                <p><strong>3.</strong> When you verify, the system decrypts your vote using the same encryption key and shows which candidate it was cast for.</p>
+                <p><strong>4.</strong> If decryption succeeds and the candidate is valid, your vote is <span style="color: var(--success);">intact and untampered</span>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('voter.dashboard') }}" class="btn btn-secondary">{{ icons.icon_arrow_left() }} Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Voter Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Welcome, {{ current_user.full_name }}</h1>
+            <p>Your secure voting dashboard</p>
+        </div>
+    </div>
+
+    <h2 class="mb-3" style="font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+        {{ icons.icon_vote() }} Active Elections
+    </h2>
+    {% if active_elections %}
+        {% for election in active_elections %}
+        <div class="election-card">
+            <div class="election-info">
+                <h3>{{ election.title }}</h3>
+                <p>{{ election.description or 'No description' }}</p>
+                <p style="margin-top: 0.35rem;">
+                    <span class="badge badge-active"><span class="status-dot"></span> Active</span>
+                    &nbsp; Ends: {{ election.end_date.strftime('%b %d, %Y at %I:%M %p') }}
+                </p>
+            </div>
+            <a href="{{ url_for('voter.vote_page', election_id=election.id) }}" class="btn btn-primary">
+                Cast Vote {{ icons.icon_arrow_right() }}
+            </a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state glass-card" style="padding: 3rem;">
+            <div class="empty-icon">{{ icons.icon_clock() }}</div>
+            <h3>No Active Elections</h3>
+            <p>There are no elections currently accepting votes. Check back later.</p>
+        </div>
+    {% endif %}
+
+    <h2 class="mb-3 mt-4" style="font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+        {{ icons.icon_bar_chart() }} Past Elections
+    </h2>
+    {% if completed_elections %}
+        {% for election in completed_elections %}
+        <div class="election-card">
+            <div class="election-info">
+                <h3>{{ election.title }}</h3>
+                <p>{{ election.description or 'No description' }}</p>
+                <p style="margin-top: 0.35rem;">
+                    <span class="badge badge-{{ election.status }}">{{ election.status|title }}</span>
+                    {% if election.blockchain_tx_hash %}
+                    &nbsp; <span class="badge badge-finalized">{{ icons.icon_chain() }} Blockchain Verified</span>
+                    {% endif %}
+                </p>
+            </div>
+            <a href="{{ url_for('voter.results', election_id=election.id) }}" class="btn btn-secondary">
+                View Results {{ icons.icon_arrow_right() }}
+            </a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state glass-card" style="padding: 3rem;">
+            <div class="empty-icon">{{ icons.icon_inbox() }}</div>
+            <h3>No Past Elections</h3>
+            <p>Completed elections will appear here with their results.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

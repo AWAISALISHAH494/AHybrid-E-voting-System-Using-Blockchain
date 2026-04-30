@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Vote Successful{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="vote-success">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2>Vote Cast Successfully!</h2>
+        <p class="mt-2" style="color: var(--text-secondary); font-size: 1.05rem;">
+            Your vote for <strong>{{ election.title }}</strong> has been encrypted and stored securely.
+        </p>
+
+        {% if receipt %}
+        <div class="glass-card mt-4" style="text-align: left;">
+            <div class="card-header">{{ icons.icon_shield() }} Your Vote Receipt</div>
+            <div class="card-body">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    Save this receipt code. You can use it anytime to verify that your vote was recorded correctly and has not been tampered with.
+                </p>
+                <div class="hash-display" style="font-size: 1.5rem; text-align: center; letter-spacing: 0.15em; padding: 1.25rem; color: var(--accent-2);">
+                    {{ receipt }}
+                </div>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.75rem; text-align: center;">
+                    Keep this code private. Anyone with this code can verify your vote.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="info-box mt-4" style="text-align: left;">
+            {{ icons.icon_lock() }}
+            <div>
+                <strong>AES-256 Encrypted</strong>
+                <p>Your vote has been encrypted with AES-256-CBC encryption and stored in the secure database. Your identity cannot be linked to your vote.</p>
+            </div>
+        </div>
+        <div class="mt-4" style="display: flex; gap: 0.75rem; justify-content: center;">
+            <a href="{{ url_for('voter.verify_vote') }}" class="btn btn-secondary btn-lg">
+                {{ icons.icon_search() }} Verify My Vote
+            </a>
+            <a href="{{ url_for('voter.dashboard') }}" class="btn btn-primary btn-lg">
+                {{ icons.icon_arrow_left() }} Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{# Admin sidebar partial — included in all admin templates #}
+{% import 'icons.html' as icons %}
+<aside class="admin-sidebar">
+    <nav class="sidebar-nav">
+        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+            {{ icons.icon_grid() }} Dashboard
+        </a>
+        <a href="{{ url_for('admin.elections') }}" class="{% if 'election' in request.endpoint %}active{% endif %}">
+            {{ icons.icon_vote() }} Elections
+        </a>
+        <a href="{{ url_for('admin.voters') }}" class="{% if request.endpoint == 'admin.voters' %}active{% endif %}">
+            {{ icons.icon_users() }} Voters
+        </a>
+    </nav>
+</aside>

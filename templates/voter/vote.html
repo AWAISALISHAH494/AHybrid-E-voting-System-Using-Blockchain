@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Vote — {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+    <div class="page-header">
+        <div>
+            <h1>{{ election.title }}</h1>
+            <p>{{ election.description or 'Select your candidate and cast your vote' }}</p>
+        </div>
+        <span class="badge badge-active"><span class="status-dot"></span> Voting Open</span>
+    </div>
+
+    <form method="POST" action="{{ url_for('voter.cast_vote', election_id=election.id) }}" id="voteForm">
+        <input type="hidden" name="candidate_id" id="selectedCandidate" value="">
+
+        <div class="candidates-grid">
+            {% for candidate in candidates %}
+            <div class="candidate-card" data-candidate-id="{{ candidate.id }}" onclick="selectCandidate(this, {{ candidate.id }})">
+                <div class="check-mark">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="candidate-avatar">{{ candidate.name[0] }}</div>
+                <h3>{{ candidate.name }}</h3>
+                <p class="party">{{ candidate.party or 'Independent' }}</p>
+                {% if candidate.symbol %}
+                <p class="symbol">{{ candidate.symbol }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-primary btn-lg" id="submitVoteBtn" disabled
+                    onclick="showConfirmation()" style="opacity: 0.5; cursor: not-allowed;">
+                {{ icons.icon_vote() }} Cast Your Vote
+            </button>
+            <p class="mt-2" style="font-size: 0.82rem; color: var(--text-muted);">
+                Select a candidate above to enable voting
+            </p>
+        </div>
+    </form>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-content">
+        <h3>Confirm Your Vote</h3>
+        <p>You are about to cast your vote for <strong id="selectedName">&mdash;</strong>. This action cannot be undone.</p>
+        <div class="modal-buttons">
+            <button class="btn btn-secondary" onclick="hideConfirmation()">Cancel</button>
+            <button class="btn btn-primary" onclick="document.getElementById('voteForm').submit()">
+                {{ icons.icon_check() }} Confirm Vote
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedId = null;
+function selectCandidate(el, id) {
+    document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedId = id;
+    document.getElementById('selectedCandidate').value = id;
+    const btn = document.getElementById('submitVoteBtn');
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+}
+function showConfirmation() {
+    if (!selectedId) return;
+    const selected = document.querySelector('.candidate-card.selected h3');
+    document.getElementById('selectedName').textContent = selected ? selected.textContent : '';
+    document.getElementById('confirmModal').classList.add('active');
+}
+function hideConfirmation() {
+    document.getElementById('confirmModal').classList.remove('active');
+}
+</script>
+{% endblock %}

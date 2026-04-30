@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Results — {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    {% include 'admin/sidebar.html' %}
+    <main class="admin-content">
+        <div class="page-header">
+            <div>
+                <h1>{{ election.title }} — Results</h1>
+                <p>
+                    <span class="badge badge-{{ election.status }}"><span class="status-dot"></span> {{ election.status|title }}</span>
+                    {% if election.blockchain_tx_hash %}
+                    <span class="badge badge-finalized">{{ icons.icon_chain() }} Blockchain Verified</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="actions-row">
+                {% if election.status != 'finalized' %}
+                <form method="POST" action="{{ url_for('admin.finalize_election', election_id=election.id) }}"
+                      onsubmit="return confirm('Finalize this election? This will store the result hash on the blockchain and cannot be undone.')">
+                    <button type="submit" class="btn btn-success btn-lg">{{ icons.icon_chain() }} Finalize on Blockchain</button>
+                </form>
+                {% else %}
+                <a href="{{ url_for('admin.verify_blockchain', election_id=election.id) }}" class="btn btn-primary">
+                    {{ icons.icon_search() }} Verify on Blockchain
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="glass-card mb-4">
+            <div class="card-header">{{ icons.icon_bar_chart() }} Vote Count</div>
+            <div class="card-body">
+                {% set total = results.total_votes if results.total_votes > 0 else 1 %}
+                {% set colors = ['#6c63ff', '#00d4aa', '#10b981', '#f5a623', '#ff4757', '#a855f7'] %}
+                {% for r in results.results|sort(attribute='total', reverse=True) %}
+                <div class="result-bar-container">
+                    <div class="result-bar-header">
+                        <h4>{{ r.name }} <span style="font-weight: 400; color: var(--text-muted); font-size: 0.85rem;">{{ r.party or '' }}</span></h4>
+                        <span class="votes-count">{{ r.total }} votes ({{ '%.1f'|format(r.total / total * 100) }}%)</span>
+                    </div>
+                    <div class="result-bar-track">
+                        <div class="result-bar-fill" style="width: {{ (r.total / total * 100)|int }}%; background: {{ colors[loop.index0 % colors|length] }};">
+                            <span class="percentage">{{ '%.1f'|format(r.total / total * 100) }}%</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                        <span class="badge badge-electronic">Electronic: {{ r.electronic }}</span>
+                        <span class="badge badge-manual">Manual: {{ r.manual }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="result-summary mb-4">
+            <div class="result-summary-card"><h4>{{ results.total_votes }}</h4><p>Total Votes</p></div>
+            <div class="result-summary-card"><h4>{{ results.results|length }}</h4><p>Candidates</p></div>
+            <div class="result-summary-card"><h4>{{ results.results|sum(attribute='electronic') }}</h4><p>Electronic</p></div>
+            <div class="result-summary-card"><h4>{{ results.results|sum(attribute='manual') }}</h4><p>Manual</p></div>
+        </div>
+
+        {% if election.result_hash %}
+        <div class="blockchain-card">
+            <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">{{ icons.icon_chain() }} Blockchain Record</h4>
+            <div class="hash-label">Result Hash (SHA-256)</div>
+            <div class="hash-display">{{ election.result_hash }}</div>
+            {% if election.blockchain_tx_hash %}
+            <div class="hash-label mt-2">Transaction Hash</div>
+            <div class="hash-display">{{ election.blockchain_tx_hash }}</div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="glass-card">
+            <div class="card-header">{{ icons.icon_bar_chart() }} Distribution Chart</div>
+            <div class="card-body"><div class="chart-container"><canvas id="adminChart"></canvas></div></div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+new Chart(document.getElementById('adminChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+        labels: [{% for r in results.results %}'{{ r.name }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+        datasets: [
+            { label: 'Electronic', data: [{% for r in results.results %}{{ r.electronic }}{% if not loop.last %}, {% endif %}{% endfor %}], backgroundColor: 'rgba(108, 99, 255, 0.7)', borderColor: '#6c63ff', borderWidth: 1, borderRadius: 6 },
+            { label: 'Manual', data: [{% for r in results.results %}{{ r.manual }}{% if not loop.last %}, {% endif %}{% endfor %}], backgroundColor: 'rgba(0, 212, 170, 0.7)', borderColor: '#00d4aa', borderWidth: 1, borderRadius: 6 }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: { x: { ticks: { color: '#a0aec0' }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#a0aec0' }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true } },
+        plugins: { legend: { labels: { color: '#a0aec0', font: { family: 'Inter' } } } }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Candidates — {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    {% include 'admin/sidebar.html' %}
+    <main class="admin-content">
+        <div class="page-header">
+            <div><h1>{{ election.title }} — Candidates</h1><p>Manage candidates for this election</p></div>
+            <a href="{{ url_for('admin.elections') }}" class="btn btn-secondary">{{ icons.icon_arrow_left() }} Back</a>
+        </div>
+
+        <div class="glass-card mb-4" style="max-width: 600px;">
+            <div class="card-header">{{ icons.icon_plus() }} Add Candidate</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.add_candidate', election_id=election.id) }}">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Candidate name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="party">Party</label>
+                            <input type="text" class="form-control" id="party" name="party" placeholder="Party name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="symbol">Election Symbol</label>
+                        <input type="text" class="form-control" id="symbol" name="symbol" placeholder="e.g., Lion">
+                    </div>
+                    <button type="submit" class="btn btn-primary">{{ icons.icon_plus() }} Add Candidate</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-header">{{ icons.icon_users() }} Current Candidates ({{ candidates|length }})</div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Candidate</th><th>Party</th><th>Symbol</th><th>Action</th></tr></thead>
+                        <tbody>
+                            {% for candidate in candidates %}
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="candidate-avatar" style="width: 36px; height: 36px; font-size: 0.85rem; margin: 0;">{{ candidate.name[0] }}</div>
+                                        <strong>{{ candidate.name }}</strong>
+                                    </div>
+                                </td>
+                                <td>{{ candidate.party or '&mdash;' }}</td>
+                                <td>{{ candidate.symbol or '&mdash;' }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('admin.delete_candidate', candidate_id=candidate.id) }}" onsubmit="return confirm('Remove this candidate?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">{{ icons.icon_trash() }} Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not candidates %}
+                            <tr><td colspan="4" class="text-center" style="padding: 2rem; color: var(--text-muted);">No candidates added yet.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Edit Election{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    {% include 'admin/sidebar.html' %}
+    <main class="admin-content">
+        <div class="page-header">
+            <div><h1>Edit Election</h1><p>Update election details</p></div>
+            <a href="{{ url_for('admin.elections') }}" class="btn btn-secondary">{{ icons.icon_arrow_left() }} Back</a>
+        </div>
+        <div class="glass-card" style="max-width: 600px;">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="title">Election Title</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ election.title }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description">{{ election.description or '' }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="start_date">Start Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="start_date" name="start_date" value="{{ election.start_date.strftime('%Y-%m-%dT%H:%M') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="end_date">End Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="end_date" name="end_date" value="{{ election.end_date.strftime('%Y-%m-%dT%H:%M') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="status">Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="pending" {% if election.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="active" {% if election.status == 'active' %}selected{% endif %}>Active</option>
+                            <option value="completed" {% if election.status == 'completed' %}selected{% endif %}>Completed</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">Save Changes {{ icons.icon_arrow_right() }}</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

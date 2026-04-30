@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Secure & Transparent Elections{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            {{ icons.icon_chain() }} Powered by Blockchain Technology
+        </div>
+        <h1>
+            Secure & Transparent<br>
+            <span class="gradient-text">Hybrid Elections</span>
+        </h1>
+        <p>
+            A next-generation e-voting system that combines cloud computing for speed
+            with blockchain verification for tamper-proof results. Cast your vote with confidence.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                {{ icons.icon_vote() }} Register to Vote
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg">
+                Sign In {{ icons.icon_arrow_right() }}
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="features-section">
+    <h2>Why <span class="gradient-text">HybridVote</span>?</h2>
+    <p class="section-subtitle">Built with security, transparency, and performance in mind.</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon purple">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3>AES-256 Encryption</h3>
+            <p>Every vote is encrypted with military-grade AES-256-CBC encryption before storage, ensuring complete vote confidentiality.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon teal">
+                <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <h3>Blockchain Verified</h3>
+            <p>Final results are hashed and stored on an Ethereum blockchain, making them impossible to tamper with or manipulate.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon green">
+                <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </div>
+            <h3>Hybrid Voting</h3>
+            <p>Supports both electronic voting and manual ballot entry, combining the best of digital and traditional voting systems.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon pink">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Duplicate Prevention</h3>
+            <p>Advanced cryptographic hashing prevents any voter from casting multiple votes while maintaining complete anonymity.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon orange">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+            </div>
+            <h3>Real-time Results</h3>
+            <p>Watch results unfold in real-time with beautiful charts and detailed analytics on the admin dashboard.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon blue">
+                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h3>Audit Trail</h3>
+            <p>Complete transparency with verifiable audit trails. Anyone can verify election integrity through blockchain records.</p>
+        </div>
+    </div>
+</section>
+
+<section class="features-section" style="padding-top: 2rem;">
+    <h2>How It <span class="gradient-text">Works</span></h2>
+    <p class="section-subtitle">Three simple steps to a tamper-proof election.</p>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Register & Authenticate</h3>
+            <p>Register with your CNIC and create a secure account. Your identity is verified to ensure only eligible voters participate.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Cast Your Vote</h3>
+            <p>Select your candidate and submit. Your vote is instantly encrypted with AES-256 and stored securely in the cloud database.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Blockchain Seal</h3>
+            <p>Once voting ends, all results are combined, hashed with SHA-256, and permanently sealed on the blockchain network.</p>
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer">
+    <p>&copy; 2026 HybridVote &mdash; Hybrid E-Voting System | Sarhad University of Science & IT, Peshawar</p>
+    <p style="margin-top: 0.5rem; font-size: 0.75rem;">FYP by Fatima Tahir, Hira Aqeel & Hafsa | Supervised by Dr. Muhammad Asif Khan</p>
+</footer>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% import 'icons.html' as icons %}
+{% block title %}Results — {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="container results-container">
+    <div class="page-header">
+        <div>
+            <h1>{{ election.title }} — Results</h1>
+            <p>
+                <span class="badge badge-{{ election.status }}">{{ election.status|title }}</span>
+                {% if election.blockchain_tx_hash %}
+                <span class="badge badge-finalized">{{ icons.icon_chain() }} Blockchain Verified</span>
+                {% endif %}
+            </p>
+        </div>
+        <a href="{{ url_for('voter.dashboard') }}" class="btn btn-secondary">{{ icons.icon_arrow_left() }} Back</a>
+    </div>
+
+    <div class="glass-card">
+        <div class="card-body">
+            {% set total = results.total_votes if results.total_votes > 0 else 1 %}
+            {% set colors = ['#6c63ff', '#00d4aa', '#10b981', '#f5a623', '#ff4757', '#a855f7', '#ec4899'] %}
+            {% for r in results.results|sort(attribute='total', reverse=True) %}
+            <div class="result-bar-container">
+                <div class="result-bar-header">
+                    <h4>{{ r.name }} <span style="font-weight: 400; color: var(--text-muted); font-size: 0.82rem;">{{ r.party or '' }}</span></h4>
+                    <span class="votes-count">{{ r.total }} votes ({{ '%.1f'|format(r.total / total * 100) }}%)</span>
+                </div>
+                <div class="result-bar-track">
+                    <div class="result-bar-fill" style="width: {{ (r.total / total * 100)|int }}%; background: {{ colors[loop.index0 % colors|length] }};">
+                        <span class="percentage">{{ '%.1f'|format(r.total / total * 100) }}%</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                    <span class="badge badge-electronic">Electronic: {{ r.electronic }}</span>
+                    <span class="badge badge-manual">Manual: {{ r.manual }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="result-summary">
+        <div class="result-summary-card"><h4>{{ results.total_votes }}</h4><p>Total Votes</p></div>
+        <div class="result-summary-card"><h4>{{ results.results|length }}</h4><p>Candidates</p></div>
+        {% if election.blockchain_tx_hash %}
+        <div class="result-summary-card"><h4>Verified</h4><p>Blockchain</p></div>
+        {% endif %}
+    </div>
+
+    <div class="glass-card mt-4">
+        <div class="card-header">{{ icons.icon_bar_chart() }} Vote Distribution</div>
+        <div class="card-body">
+            <div class="chart-container"><canvas id="resultsChart"></canvas></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('resultsChart').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for r in results.results %}'{{ r.name }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for r in results.results %}{{ r.total }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: ['#6c63ff', '#00d4aa', '#10b981', '#f5a623', '#ff4757', '#a855f7', '#ec4899'],
+            borderColor: 'transparent', borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { color: '#a0aec0', padding: 16, font: { family: 'Inter', size: 13 } } } },
+        cutout: '65%'
+    }
+});
+</script>
+{% endblock %}

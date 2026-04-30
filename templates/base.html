@@ -1,0 +1,71 @@
+{% import 'icons.html' as icons %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hybrid E-Voting System — Secure and transparent elections using blockchain technology">
+    <title>{% block title %}HybridVote{% endblock %} | Hybrid E-Voting System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_1.css') }}?v=2">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('landing') }}" class="navbar-brand">
+            <span class="brand-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span>HybridVote</span>
+        </a>
+        <div class="navbar-links">
+            {% if current_user.is_authenticated %}
+                {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}">{{ icons.icon_grid() }} Dashboard</a>
+                    <a href="{{ url_for('admin.elections') }}">{{ icons.icon_vote() }} Elections</a>
+                    <a href="{{ url_for('admin.voters') }}">{{ icons.icon_users() }} Voters</a>
+                {% else %}
+                    <a href="{{ url_for('voter.dashboard') }}">{{ icons.icon_grid() }} Dashboard</a>
+                    <a href="{{ url_for('voter.verify_vote') }}">{{ icons.icon_shield() }} Verify Vote</a>
+                {% endif %}
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm">{{ icons.icon_log_out() }} Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Sign In</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+            <span class="flash-icon">
+                {% if category == 'success' %}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                {% elif category == 'error' %}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                {% else %}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/></svg>
+                {% endif %}
+            </span>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    {% block footer %}
+    <footer class="site-footer">
+        <p>&copy; 2026 HybridVote &mdash; Hybrid E-Voting System. Sarhad University of Science & IT</p>
+    </footer>
+    {% endblock %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
