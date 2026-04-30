@@ -1,3 +1,8 @@
+# ==========================================
+# Author: Awais Ali Shah
+# License: All Rights Reserved
+# Unauthorized use or submission is prohibited
+# ==========================================
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from models import db
@@ -231,3 +236,9 @@ def verify_blockchain(election_id):
 def voters():
     all_voters = User.query.filter_by(role='voter').order_by(User.created_at.desc()).all()
     return render_template('admin/voters.html', voters=all_voters)
+
+# ==========================================
+# Author: Awais Ali Shah
+# License: All Rights Reserved
+# Unauthorized use or submission is prohibited
+# ==========================================

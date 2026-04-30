@@ -1,3 +1,9 @@
+# ==========================================
+# Author: Awais Ali Shah
+# License: All Rights Reserved
+# Unauthorized use or submission is prohibited
+# ==========================================
+
 from models import db
 from datetime import datetime
 
@@ -15,3 +21,9 @@ class Vote(db.Model):
 
     def __repr__(self):
         return f'<Vote {self.id} [{self.vote_type}] Election:{self.election_id}>'
+
+# ==========================================
+# Author: Awais Ali Shah
+# License: All Rights Reserved
+# Unauthorized use or submission is prohibited
+# ==========================================
