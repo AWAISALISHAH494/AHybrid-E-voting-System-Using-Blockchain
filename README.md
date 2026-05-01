@@ -12,6 +12,17 @@ This project is owned and developed by Awais. All rights reserved.
 
 ## Usage Restrictions
 
+## CRITICAL INFORMATION
+
+**This project is the intellectual property of Awais Ali Shah.**
+
+### Blockchain Proof (Immutable):
+- **Contract**: 0xfEe71B9cD3514a3C0819bf39A8e433733680Ca75
+- **Date**: December 5, 2025, 9:52 PM UTC
+- **Verification**: [Etherscan](https://sepolia.etherscan.io/tx/0xf161388945e5c3c0c7ef37329fa7784ff8d5797d90793ece79e64ed71b769321)
+
+---
+
 ⚠️ **IMPORTANT NOTICE:**
 
 It is **NOT ALLOWED** for students to:
